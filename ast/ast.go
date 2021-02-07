@@ -132,3 +132,23 @@ func (l *IntegerLiteral) TokenLiteral() string {
 func (l *IntegerLiteral) String() string {
 	return l.Token.Literal
 }
+
+type PrefixExpression struct {
+	Token    token.Token // prefix token, e.g. "!"
+	Operator string
+	Right    Expression
+}
+
+func (e *PrefixExpression) expressionNode() {}
+
+func (e *PrefixExpression) TokenLiteral() string {
+	return e.Token.Literal
+}
+
+func (e *PrefixExpression) String() string {
+	var out bytes.Buffer
+	out.WriteString("(")
+	out.WriteString(e.Operator)
+	out.WriteString(e.Right.String())
+	return out.String()
+}
