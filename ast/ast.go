@@ -2,6 +2,7 @@ package ast
 
 import (
 	"bytes"
+	"strings"
 
 	"github.com/lusingander/monkey/token"
 )
@@ -234,5 +235,31 @@ func (s *BlockStatement) String() string {
 	for _, stmt := range s.Statements {
 		out.WriteString(stmt.String())
 	}
+	return out.String()
+}
+
+type FunctionLiteral struct {
+	Token      token.Token // token.FUNCTION
+	Parameters []*Identifier
+	Body       *BlockStatement
+}
+
+func (l *FunctionLiteral) expressionNode() {}
+
+func (l *FunctionLiteral) TokenLiteral() string {
+	return l.Token.Literal
+}
+
+func (l *FunctionLiteral) String() string {
+	var out bytes.Buffer
+	params := make([]string, 0)
+	for _, p := range l.Parameters {
+		params = append(params, p.String())
+	}
+	out.WriteString(l.TokenLiteral())
+	out.WriteString("(")
+	out.WriteString(strings.Join(params, ", "))
+	out.WriteString(")")
+	out.WriteString(l.Body.String())
 	return out.String()
 }
