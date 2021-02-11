@@ -303,3 +303,26 @@ func (e *CallExpression) String() string {
 	out.WriteString(")")
 	return out.String()
 }
+
+type ArrayLiteral struct {
+	Token    token.Token
+	Elements []Expression
+}
+
+func (l *ArrayLiteral) expressionNode() {}
+
+func (l *ArrayLiteral) TokenLiteral() string {
+	return l.Token.Literal
+}
+
+func (l *ArrayLiteral) String() string {
+	var out bytes.Buffer
+	elems := make([]string, 0)
+	for _, e := range l.Elements {
+		elems = append(elems, e.String())
+	}
+	out.WriteString("[")
+	out.WriteString(strings.Join(elems, ", "))
+	out.WriteString("]")
+	return out.String()
+}

@@ -663,6 +663,50 @@ func TestCallExpressionParamterParsing(t *testing.T) {
 	}
 }
 
+func TestArrayLiteralParsing(t *testing.T) {
+	input := `[1, 2 + 2, 3 * 3]`
+
+	l := lexer.New(input)
+	p := New(l)
+
+	program := p.ParseProgram()
+	checkParserErrors(t, p)
+
+	stmt := program.Statements[0].(*ast.ExpressionStatement)
+	array, ok := stmt.Expression.(*ast.ArrayLiteral)
+	if !ok {
+		t.Fatalf("stmt.Expression is not *ast.ArrayLiteral: got=%T", stmt.Expression)
+	}
+
+	if len(array.Elements) != 3 {
+		t.Fatalf("len(array.Elements) not 3: got=%d", len(array.Elements))
+	}
+
+	testIntegerLiteral(t, array.Elements[0], 1)
+	testInfixExpression(t, array.Elements[1], 2, "+", 2)
+	testInfixExpression(t, array.Elements[2], 3, "*", 3)
+}
+
+func TestEmptyArrayLiteralParsing(t *testing.T) {
+	input := `[]`
+
+	l := lexer.New(input)
+	p := New(l)
+
+	program := p.ParseProgram()
+	checkParserErrors(t, p)
+
+	stmt := program.Statements[0].(*ast.ExpressionStatement)
+	array, ok := stmt.Expression.(*ast.ArrayLiteral)
+	if !ok {
+		t.Fatalf("stmt.Expression is not *ast.ArrayLiteral: got=%T", stmt.Expression)
+	}
+
+	if len(array.Elements) != 0 {
+		t.Fatalf("len(array.Elements) not 0: got=%d", len(array.Elements))
+	}
+}
+
 // test helper functions
 
 func testLetStatement(t *testing.T, stmt ast.Statement, name string) bool {
