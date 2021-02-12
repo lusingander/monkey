@@ -15,6 +15,7 @@ const (
 	BooleanObj     = "BOOLEAN"
 	StringObj      = "STRING"
 	NullObj        = "NULL"
+	ArrayObj       = "ARRAY"
 	ReturnValueObj = "RETURN_VALUE"
 	FunctionObj    = "FUNCTION"
 	BuiltinObj     = "BUILTIN"
@@ -70,6 +71,26 @@ func (n *Null) Type() ObjectType {
 
 func (n *Null) Inspect() string {
 	return "null"
+}
+
+type Array struct {
+	Elements []Object
+}
+
+func (a *Array) Type() ObjectType {
+	return ArrayObj
+}
+
+func (a *Array) Inspect() string {
+	var out bytes.Buffer
+	elems := make([]string, 0)
+	for _, e := range a.Elements {
+		elems = append(elems, e.Inspect())
+	}
+	out.WriteString("[")
+	out.WriteString(strings.Join(elems, ", "))
+	out.WriteString("]")
+	return out.String()
 }
 
 type ReturnValue struct {
