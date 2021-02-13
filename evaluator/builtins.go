@@ -1,13 +1,25 @@
 package evaluator
 
-import "github.com/lusingander/monkey/object"
+import (
+	"fmt"
+
+	"github.com/lusingander/monkey/object"
+)
 
 var builtins = map[string]*object.Builtin{
+	"puts":  {Fn: builtinPuts},
 	"len":   {Fn: builtinLen},
 	"first": {Fn: builtinFirst},
 	"last":  {Fn: builtinLast},
 	"rest":  {Fn: builtinRest},
 	"push":  {Fn: builtinPush},
+}
+
+func builtinPuts(args ...object.Object) object.Object {
+	for _, arg := range args {
+		fmt.Println(arg.Inspect())
+	}
+	return NULL
 }
 
 func builtinLen(args ...object.Object) object.Object {
