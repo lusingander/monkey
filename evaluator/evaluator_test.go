@@ -332,6 +332,35 @@ func TestBuiltinFunctions(t *testing.T) {
 		{`len(1)`, "argument to 'len' not supported: got=INTEGER"},
 		{`len("one", "two")`, "wrong number of arguments: want=1, got=2"},
 		{`len()`, "wrong number of arguments: want=1, got=0"},
+		{`len([])`, 0},
+		{`len([1, 2, 3])`, 3},
+		{`len(["foo bar", ["foo", "bar"]])`, 2},
+		{`first([])`, nil},
+		{`first([1])`, 1},
+		{`first([1, 2, 3])`, 1},
+		{`first([[1, 2], [3, 4]])`, []int{1, 2}},
+		{`first(0)`, "argument to 'first' not supported: got=INTEGER"},
+		{`first()`, "wrong number of arguments: want=1, got=0"},
+		{`first([1, 2], [3, 4])`, "wrong number of arguments: want=1, got=2"},
+		{`last([])`, nil},
+		{`last([1])`, 1},
+		{`last([1, 2, 3])`, 3},
+		{`last([[1, 2], [3, 4]])`, []int{3, 4}},
+		{`last(0)`, "argument to 'last' not supported: got=INTEGER"},
+		{`last()`, "wrong number of arguments: want=1, got=0"},
+		{`last([1, 2], [3, 4])`, "wrong number of arguments: want=1, got=2"},
+		{`rest([])`, nil},
+		{`rest([1])`, []int{}},
+		{`rest([1, 2])`, []int{2}},
+		{`rest([1, 2, 3])`, []int{2, 3}},
+		{`rest(0)`, "argument to 'rest' not supported: got=INTEGER"},
+		{`rest()`, "wrong number of arguments: want=1, got=0"},
+		{`rest([1, 2], [3, 4])`, "wrong number of arguments: want=1, got=2"},
+		{`push([1, 2, 3, 4], 5)`, []int{1, 2, 3, 4, 5}},
+		{`push([], 1)`, []int{1}},
+		{`push()`, "wrong number of arguments: want=2, got=0"},
+		{`push([])`, "wrong number of arguments: want=2, got=1"},
+		{`push([], 1, 2)`, "wrong number of arguments: want=2, got=3"},
 	}
 
 	for _, tt := range tests {
@@ -349,6 +378,20 @@ func TestBuiltinFunctions(t *testing.T) {
 			if errObj.Message != expected {
 				t.Errorf("wrong error message: want=%q, got=%q", expected, errObj.Message)
 			}
+		case []int:
+			array, ok := evaluated.(*object.Array)
+			if !ok {
+				t.Errorf("object is not Array: got=%T (%+v)", evaluated, evaluated)
+				continue
+			}
+			if len(array.Elements) != len(expected) {
+				t.Errorf("array has wrong num of elements: want=%d, got=%d", len(expected), len(array.Elements))
+			}
+			for i, e := range array.Elements {
+				testIntegerObject(t, e, int64(expected[i]))
+			}
+		case nil:
+			testNullObject(t, evaluated)
 		}
 	}
 }
