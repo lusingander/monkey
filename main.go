@@ -1,27 +1,23 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"os"
-	"os/user"
 
-	"github.com/lusingander/monkey/repl"
+	"github.com/lusingander/monkey/command"
+	"github.com/urfave/cli/v2"
 )
 
-var in, out = os.Stdin, os.Stdout
-
 func run(args []string) error {
-	user, err := user.Current()
-	if err != nil {
-		return err
+	app := &cli.App{
+		Name:  "monkey",
+		Usage: "CLI tool for Monkey programming language",
+		Commands: []*cli.Command{
+			command.ReplCommand,
+			command.RunCommand,
+		},
 	}
-
-	fmt.Fprintf(out, "Hello %s! This is the Monkey programming language!\n", user.Username)
-	fmt.Fprintf(out, "Feel free to type in commands\n")
-
-	repl.Start(in, out)
-	return nil
+	return app.Run(args)
 }
 
 func main() {
