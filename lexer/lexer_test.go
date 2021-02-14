@@ -19,6 +19,7 @@ let result = add(five, ten);
 
 !-/*5;
 5 < 10 > 5;
+3 <= 3 >= 3;
 
 # this is comment
 # 1 * 2 * 3
@@ -91,6 +92,12 @@ if (5 < 10) {
 		{token.INT, "10"},
 		{token.GT, ">"},
 		{token.INT, "5"},
+		{token.SEMICOLON, ";"},
+		{token.INT, "3"},
+		{token.LE, "<="},
+		{token.INT, "3"},
+		{token.GE, ">="},
+		{token.INT, "3"},
 		{token.SEMICOLON, ";"},
 		{token.IF, "if"},
 		{token.LPAREN, "("},
