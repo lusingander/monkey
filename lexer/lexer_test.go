@@ -20,10 +20,12 @@ let result = add(five, ten);
 !-/*5;
 5 < 10 > 5;
 
+# this is comment
+# 1 * 2 * 3
 if (5 < 10) {
-  return true;
+  return true;  # return true!
 } else {
-  return false;
+  return false; # return false!
 }
 
 10 == 10;
@@ -31,6 +33,8 @@ if (5 < 10) {
 
 "foobar";
 "foo bar";
+
+# hash and array
 
 [1, 2];
 {"foo": "bar"};

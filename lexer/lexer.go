@@ -20,7 +20,7 @@ func New(input string) *Lexer {
 func (l *Lexer) NextToken() token.Token {
 	var tok token.Token
 
-	l.skipWhitespace()
+	l.skip()
 
 	switch l.ch {
 	case '=':
@@ -128,8 +128,20 @@ func (l *Lexer) readIdentifier() string {
 	return l.input[position:l.position]
 }
 
-func (l *Lexer) skipWhitespace() {
-	for l.ch == ' ' || l.ch == '\t' || l.ch == '\n' || l.ch == '\r' {
+func (l *Lexer) skip() {
+	comment := false
+	for {
+		if !comment && l.ch == '#' {
+			comment = true
+			continue
+		}
+		if comment && isNewLine(l.ch) {
+			comment = false
+			continue
+		}
+		if !comment && !isWhitespace(l.ch) {
+			return
+		}
 		l.readChar()
 	}
 }
@@ -165,4 +177,12 @@ func isLetter(ch byte) bool {
 
 func isDigit(ch byte) bool {
 	return '0' <= ch && ch <= '9'
+}
+
+func isNewLine(ch byte) bool {
+	return ch == '\n' || ch == '\r'
+}
+
+func isWhitespace(ch byte) bool {
+	return ch == ' ' || ch == '\t' || isNewLine(ch)
 }
