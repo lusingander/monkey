@@ -2,17 +2,20 @@ package evaluator
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/lusingander/monkey/object"
 )
 
 var builtins = map[string]*object.Builtin{
-	"puts":  {Fn: builtinPuts},
-	"len":   {Fn: builtinLen},
-	"first": {Fn: builtinFirst},
-	"last":  {Fn: builtinLast},
-	"rest":  {Fn: builtinRest},
-	"push":  {Fn: builtinPush},
+	"puts":    {Fn: builtinPuts},
+	"print":   {Fn: builtinPrint},
+	"println": {Fn: builtinPrintln},
+	"len":     {Fn: builtinLen},
+	"first":   {Fn: builtinFirst},
+	"last":    {Fn: builtinLast},
+	"rest":    {Fn: builtinRest},
+	"push":    {Fn: builtinPush},
 }
 
 func builtinPuts(args ...object.Object) object.Object {
@@ -20,6 +23,20 @@ func builtinPuts(args ...object.Object) object.Object {
 		fmt.Println(arg.Inspect())
 	}
 	return NULL
+}
+
+func builtinPrint(args ...object.Object) object.Object {
+	strs := []string{}
+	for _, arg := range args {
+		strs = append(strs, arg.Inspect())
+	}
+	fmt.Print(strings.Join(strs, " "))
+	return NULL
+}
+
+func builtinPrintln(args ...object.Object) object.Object {
+	args = append(args, &object.String{Value: "\n"})
+	return builtinPrint(args...)
 }
 
 func builtinLen(args ...object.Object) object.Object {
