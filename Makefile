@@ -8,6 +8,10 @@ build:
 repl: build
 	./${BINARY_NAME} repl
 
+.PHONY: test
+test:
+	go test ./...
+
 .PHONY: clean
 clean:
 	rm ./${BINARY_NAME}
