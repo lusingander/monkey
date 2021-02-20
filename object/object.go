@@ -22,6 +22,7 @@ const (
 	FunctionObj    = "FUNCTION"
 	BuiltinObj     = "BUILTIN"
 	ErrorObj       = "ERROR"
+	QuoteObj       = "QUOTE"
 )
 
 type Object interface {
@@ -219,4 +220,16 @@ func (e *Error) Type() ObjectType {
 
 func (e *Error) Inspect() string {
 	return "ERROR: " + e.Message
+}
+
+type Quote struct {
+	Node ast.Node
+}
+
+func (q *Quote) Type() ObjectType {
+	return QuoteObj
+}
+
+func (q *Quote) Inspect() string {
+	return "QUOTE(" + q.Node.String() + ")"
 }
