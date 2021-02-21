@@ -1,6 +1,7 @@
 package evaluator
 
 import (
+	"math"
 	"testing"
 
 	"github.com/lusingander/monkey/lexer"
@@ -28,11 +29,43 @@ func TestEvalIntegerExpression(t *testing.T) {
 		{"3 * 3 * 3 + 10", 37},
 		{"3 * (3 * 3) + 10", 37},
 		{"(5 + 10 * 2 + 15 / 3) * 2 + -10", 50},
+		{"5 / 2", 2},
+		{"4 / 2", 2},
 	}
 
 	for _, tt := range tests {
 		evaluated := testEval(tt.input)
 		testIntegerObject(t, evaluated, tt.expected)
+	}
+}
+
+func TestEvalFloatExpression(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected float64
+	}{
+		{"1.23", 1.23},
+		{"123.45", 123.45},
+		{"0.0012", 0.0012},
+		{"-2.3", -2.3},
+		{"-23.45", -23.45},
+		{"0.1 + 0.1 + 0.1 + 0.1 - 0.2", 0.2},
+		{"0.2 * 0.2 * 0.2 * 0.2 * 0.2", 0.00032},
+		{"1 + 0.5 * 0.1", 1.05},
+		{"10.567 - 4 / 2", 8.567},
+		{"-9.999 - 0.001 + 5", -5},
+		{"5.0 / 2.0", 2.5},
+		{"4.0 / 2.0", 2},
+		{"5.0 / 2", 2.5},
+		{"4.0 / 2", 2},
+		{"5 / 2.0", 2.5},
+		{"4 / 2.0", 2},
+		{"2.0 * (5.4 + 9.6)", 30},
+	}
+
+	for _, tt := range tests {
+		evaluated := testEval(tt.input)
+		testFloatObject(t, evaluated, tt.expected)
 	}
 }
 
@@ -57,6 +90,20 @@ func TestEvalBooleanExpression(t *testing.T) {
 		{"1 != 1", false},
 		{"1 == 2", false},
 		{"1 != 2", true},
+		{"1.5 < 2.5", true},
+		{"1.5 > 2.5", false},
+		{"1.5 < 1.5", false},
+		{"1.5 > 1.5", false},
+		{"1.5 <= 2.5", true},
+		{"1.5 <= 1.5", true},
+		{"2.5 <= 1.5", false},
+		{"2.5 >= 1.5", true},
+		{"1.5 >= 1.5", true},
+		{"1.5 >= 2.5", false},
+		{"1.5 == 1.5", true},
+		{"1.5 != 1.5", false},
+		{"1.5 == 2.5", false},
+		{"1.5 != 2.5", true},
 		{"true == true", true},
 		{"false == false", true},
 		{"true == false", false},
@@ -583,6 +630,20 @@ func testIntegerObject(t *testing.T, obj object.Object, expected int64) bool {
 	}
 	if result.Value != expected {
 		t.Errorf("object has wrong value: want=%d, got=%d", expected, result.Value)
+		return false
+	}
+	return true
+}
+
+func testFloatObject(t *testing.T, obj object.Object, expected float64) bool {
+	result, ok := obj.(*object.Float)
+	if !ok {
+		t.Errorf("object is not Float: got=%T (%+v)", obj, obj)
+		return false
+	}
+	const threshold = 0.00000001
+	if math.Abs(result.Value-expected) > threshold {
+		t.Errorf("object has wrong value: want=%f, got=%f", expected, result.Value)
 		return false
 	}
 	return true
