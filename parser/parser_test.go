@@ -64,6 +64,10 @@ func TestReturnStatements(t *testing.T) {
 			5,
 		},
 		{
+			"return 0.25;",
+			0.25,
+		},
+		{
 			"return true;",
 			true,
 		},
@@ -137,6 +141,29 @@ func TestIntegerLiteralExpression(t *testing.T) {
 	}
 
 	if !testIntegerLiteral(t, stmt.Expression, 5) {
+		return
+	}
+}
+
+func TestFloatLiteralExpression(t *testing.T) {
+	input := "12.345;"
+
+	l := lexer.New(input)
+	p := New(l)
+
+	program := p.ParseProgram()
+	checkParserErrors(t, p)
+
+	if len(program.Statements) != 1 {
+		t.Fatalf("program has not enough statements: got=%d", len(program.Statements))
+	}
+
+	stmt, ok := program.Statements[0].(*ast.ExpressionStatement)
+	if !ok {
+		t.Fatalf("program.Statements[0] is not *ast.ExpressionStatement: got=%T", program.Statements[0])
+	}
+
+	if !testFloatLiteral(t, stmt.Expression, 12.345) {
 		return
 	}
 }
@@ -261,6 +288,8 @@ func TestParsingInfixExpressions(t *testing.T) {
 		{"true == true", true, "==", true},
 		{"true != false", true, "!=", false},
 		{"false == false", false, "==", false},
+		{"1.23 + 4.56", 1.23, "+", 4.56},
+		{"1.23 - 4.56", 1.23, "-", 4.56},
 	}
 
 	for _, tt := range infixTests {
@@ -1003,6 +1032,23 @@ func testIntegerLiteral(t *testing.T, il ast.Expression, value int64) bool {
 	return true
 }
 
+func testFloatLiteral(t *testing.T, il ast.Expression, value float64) bool {
+	f, ok := il.(*ast.FloatLiteral)
+	if !ok {
+		t.Errorf("il not *ast.FloatLiteral: got=%T", il)
+		return false
+	}
+
+	if f.Value != value {
+		t.Errorf("integ.Value not %f: got=%f", value, f.Value)
+		return false
+	}
+
+	// better to validate f.TokenLiteral()
+
+	return true
+}
+
 func testIdentifier(t *testing.T, exp ast.Expression, value string) bool {
 	ident, ok := exp.(*ast.Identifier)
 	if !ok {
@@ -1049,6 +1095,10 @@ func testLiteralExpression(t *testing.T, exp ast.Expression, expected interface{
 		return testIntegerLiteral(t, exp, int64(v))
 	case int64:
 		return testIntegerLiteral(t, exp, v)
+	case float32:
+		return testFloatLiteral(t, exp, float64(v))
+	case float64:
+		return testFloatLiteral(t, exp, v)
 	case string:
 		return testIdentifier(t, exp, v)
 	case bool:

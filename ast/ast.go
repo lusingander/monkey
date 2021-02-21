@@ -134,6 +134,21 @@ func (l *IntegerLiteral) String() string {
 	return l.Token.Literal
 }
 
+type FloatLiteral struct {
+	Token token.Token
+	Value float64
+}
+
+func (l *FloatLiteral) expressionNode() {}
+
+func (l *FloatLiteral) TokenLiteral() string {
+	return l.Token.Literal
+}
+
+func (l *FloatLiteral) String() string {
+	return l.Token.Literal
+}
+
 type Boolean struct {
 	Token token.Token
 	Value bool
