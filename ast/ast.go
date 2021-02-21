@@ -371,3 +371,29 @@ func (e *IndexExpression) String() string {
 	out.WriteString("])")
 	return out.String()
 }
+
+type MacroLiteral struct {
+	Token      token.Token // token.MACRO
+	Parameters []*Identifier
+	Body       *BlockStatement
+}
+
+func (l *MacroLiteral) expressionNode() {}
+
+func (l *MacroLiteral) TokenLiteral() string {
+	return l.Token.Literal
+}
+
+func (l *MacroLiteral) String() string {
+	var out bytes.Buffer
+	params := make([]string, 0)
+	for _, p := range l.Parameters {
+		params = append(params, p.String())
+	}
+	out.WriteString(l.TokenLiteral())
+	out.WriteString("(")
+	out.WriteString(strings.Join(params, ", "))
+	out.WriteString(")")
+	out.WriteString(l.Body.String())
+	return out.String()
+}
