@@ -10,6 +10,7 @@ func TestNextToken(t *testing.T) {
 	input := `
 let five = 5;
 let ten = 10;
+let f = 0.123;
 
 let add = fn(x, y) {
   x + y;
@@ -20,6 +21,7 @@ let result = add(five, ten);
 !-/*5;
 5 < 10 > 5;
 3 <= 3 >= 3;
+2.34 < 56.789;
 
 # this is comment
 # 1 * 2 * 3
@@ -56,6 +58,11 @@ macro(x, y) { x + y; };
 		{token.IDENT, "ten"},
 		{token.ASSIGN, "="},
 		{token.INT, "10"},
+		{token.SEMICOLON, ";"},
+		{token.LET, "let"},
+		{token.IDENT, "f"},
+		{token.ASSIGN, "="},
+		{token.FLOAT, "0.123"},
 		{token.SEMICOLON, ";"},
 		{token.LET, "let"},
 		{token.IDENT, "add"},
@@ -100,6 +107,10 @@ macro(x, y) { x + y; };
 		{token.INT, "3"},
 		{token.GE, ">="},
 		{token.INT, "3"},
+		{token.SEMICOLON, ";"},
+		{token.FLOAT, "2.34"},
+		{token.LT, "<"},
+		{token.FLOAT, "56.789"},
 		{token.SEMICOLON, ";"},
 		{token.IF, "if"},
 		{token.LPAREN, "("},

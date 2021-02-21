@@ -1,6 +1,10 @@
 package lexer
 
-import "github.com/lusingander/monkey/token"
+import (
+	"strings"
+
+	"github.com/lusingander/monkey/token"
+)
 
 type Lexer struct {
 	input        string
@@ -86,9 +90,7 @@ func (l *Lexer) NextToken() token.Token {
 			tok.Literal = ident
 			return tok
 		} else if isDigit(l.ch) {
-			tok.Type = token.INT
-			tok.Literal = l.readNumber()
-			return tok
+			return l.newNumberToken()
 		} else {
 			tok = newToken(token.ILLEGAL, l.ch)
 		}
@@ -110,7 +112,7 @@ func (l *Lexer) readChar() {
 
 func (l *Lexer) readNumber() string {
 	position := l.position
-	for isDigit(l.ch) {
+	for isDigit(l.ch) || l.ch == '.' {
 		l.readChar()
 	}
 	return l.input[position:l.position]
@@ -174,6 +176,18 @@ func newToken(tokenType token.TokenType, ch byte) token.Token {
 		Type:    tokenType,
 		Literal: string(ch),
 	}
+}
+
+func (l *Lexer) newNumberToken() token.Token {
+	lit := l.readNumber()
+	n := strings.Count(lit, ".")
+	if n == 0 {
+		return token.Token{Type: token.INT, Literal: lit}
+	}
+	if n == 1 {
+		return token.Token{Type: token.FLOAT, Literal: lit}
+	}
+	return token.Token{Type: token.ILLEGAL, Literal: lit}
 }
 
 func isLetter(ch byte) bool {
