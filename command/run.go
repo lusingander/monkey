@@ -20,7 +20,12 @@ func run(input string) error {
 	}
 
 	env := object.NewEnvironment()
-	evaluated := evaluator.Eval(program, env)
+	macroEnv := object.NewEnvironment()
+
+	evaluator.DefineMacros(program, macroEnv)
+	expanded := evaluator.ExpandMacros(program, macroEnv)
+
+	evaluated := evaluator.Eval(expanded, env)
 	if errObj, ok := evaluated.(*object.Error); ok {
 		return buildEvaluateError(errObj)
 	}

@@ -23,6 +23,7 @@ const (
 	BuiltinObj     = "BUILTIN"
 	ErrorObj       = "ERROR"
 	QuoteObj       = "QUOTE"
+	MacroObj       = "MACRO"
 )
 
 type Object interface {
@@ -232,4 +233,29 @@ func (q *Quote) Type() ObjectType {
 
 func (q *Quote) Inspect() string {
 	return "QUOTE(" + q.Node.String() + ")"
+}
+
+type Macro struct {
+	Parameters []*ast.Identifier
+	Body       *ast.BlockStatement
+	Env        *Environment
+}
+
+func (f *Macro) Type() ObjectType {
+	return MacroObj
+}
+
+func (f *Macro) Inspect() string {
+	var out bytes.Buffer
+	params := make([]string, 0)
+	for _, p := range f.Parameters {
+		params = append(params, p.String())
+	}
+	out.WriteString("macro")
+	out.WriteString("(")
+	out.WriteString(strings.Join(params, ", "))
+	out.WriteString(") {\n")
+	out.WriteString(f.Body.String())
+	out.WriteString("}\n")
+	return out.String()
 }
